@@ -1,62 +1,105 @@
 <template>
-  <h1 :style="{ color: count > 5 ? 'red' : 'green' }">Compteur : {{ count }}</h1>
-  <div v-if="count >= 5">Bravo vous avez cliquer plus de 5 fois</div>
-  <div v-else>Moins de 5 fois</div>
-  <button v-on:click="increment">Incrémenter</button>
-  <button @click="decrement">Décrementer</button>
-  <hr>
-  <button @click="sortMovies">Réorganiser</button>
-  <form action="" @submit.prevent="addMovie">
-    <input type="text" placeholder="Nouveau film" v-model="movieName"> 
-    {{ movieName }}
-    <button>Ajouter</button>
-  </form>
+    <form action="" @submit.prevent="addTodo">
+        <fieldset role="group">
+            <input type="text" placeholder="Tâche à effectuer" v-model="newTodo">
+            <button :disabled="newTodo.length == 0">Ajouter</button>
+        </fieldset>
+    </form>
+    <div v-if='todos.length == 0'>Il n'y a pas de tâche.</div>
+    <div v-else>
+        <ul>
+            <li v-for="todo in sortedTodo()" :key="todo.date" :class="{ completed: todo.completed }">
+                <label>
+                    <input type="checkbox" v-model="todo.completed">
+                    {{ todo.title }}
+                </label>
 
-  <ul>
-    <li v-for="movie in movies" :key="movie">
-      {{ movie }} <button @click="deleteMovie(movie)">Supprimer</button>
-    </li>
-  </ul>
+            </li>
+        </ul>
 
+      <label>
+       <input type="checkbox" v-model="hideCompleted">
+       Masquer les tâches complétées
+      </label>
+    </div>
+
+    <!--
+
+Avant correction
+      <form action="" @submit.prevent="addtache">
+        <input type="text" placeholder="Ajouter une tâche." v-model="newtache">
+        <button>Ajouter</button>
+    </form>
+    <div v-if='taches.length === 0'>Il n'y a pas de tâche.</div>
+    <ul>
+        <li v-for="tache in taches" :key="tache">
+            {{ tache.date }} - {{ tache.title }} <button @click="completed(tache)">V</button>
+        </li>
+    </ul>
+-->
 </template>
 
 <script setup>
 import { ref } from 'vue'
-const count = ref(0)
-const movieName = ref('')
 
-const movies = ref([
-  'Matrix',
-  'Lilo',
-  'Titanic'
-])
+const hideCompleted = ref(false)
+const todos = ref([{
+    title: 'Tâche ',
+    completed: true,
+    date: Date.now()
+},
+{
+    title: 'Tâche à faire',
+    completed: false,
+    date: Date.now()
+}])
+const newTodo = ref('')
 
-const increment = () => {
-  count.value++
+const addTodo = () => {
+    todos.value.push({
+        title: newTodo.value,
+        completed: false,
+        date: Date.now()
+    })
+    newTodo.value = ''
 }
 
-const decrement = () => {
-  count.value--
+const sortedTodo = () => {
+    const sortedTodo =  todos.value.toSorted((a,b) => a.completed > b.completed ? 1 : -1)
+    if (hideCompleted.value == true) {
+        return sortedTodo.filter(t => t.completed == false)
+    }
+    return sortedTodo
 }
 
+/*
 
-const deleteMovie = (movie) => {
-  movies.value = movies.value.filter(m => m !== movie)
+Avant correction
+const taches = ref([])
+const newtache = ref('')
+
+taches.value = [{
+    title: 'Tâche à faire',
+    completed: false,
+    date: Date.now()
+}]
+const addtache = () => {
+    taches.value.push({
+        title: newtache.value,
+        completed: false,
+        date: Date.now()
+    })
 }
+const completed = (tache) => {
+    taches.value.filter(m => m === tache).completed = true
 
-const sortMovies = () => {
-  movies.value.sort((a, b) => a > b ? 1 : -1)
 }
-
-const addMovie = () => {
-  movies.value.push(movieName.value)
-  movieName.value = ""
-}
-
+*/
 </script>
 
 <style>
-h1 {
-  color: rgb(73, 53, 53);
+.completed {
+    opacity: .5;
+    text-decoration: line-through;
 }
 </style>
