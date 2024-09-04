@@ -1,4 +1,19 @@
 <template>
+    <Layout>
+        <template #header>
+            En tête
+        </template>
+        <template v-slot:aside>
+            Coté
+        </template>
+        <template v-slot:main>
+            Main
+        </template>
+        <template v-slot:footer>
+            Footer
+        </template>
+    </Layout>
+    <Button><strong>Test</strong> ici</Button>
     <form action="" @submit.prevent="addTodo">
         <fieldset role="group">
             <input type="text" placeholder="Tâche à effectuer" v-model="newTodo">
@@ -9,11 +24,8 @@
     <div v-else>
         <ul>
             <li v-for="todo in sortedTodo" :key="todo.date" :class="{ completed: todo.completed }">
-                <label>
-                    <input type="checkbox" v-model="todo.completed">
-                    {{ todo.title }}
-                </label>
 
+                <Checkbox :label="todo.title" v-model="todo.completed" />
             </li>
         </ul>
 
@@ -21,7 +33,11 @@
             <input type="checkbox" v-model="hideCompleted">
             Masquer les tâches complétées
         </label>
-        <p v-if="remainingTodos > 0"> {{ remainingTodos }} tâche{{ remainingTodos > 1 ? 's':''}} à faire.</p>
+        <p v-if="remainingTodos > 0"> {{ remainingTodos }} tâche{{ remainingTodos > 1 ? 's' : '' }} à faire.</p>
+
+        <Checkbox label="Bonjour"
+        @check="(p) => console.log('coché', p)"
+        />
     </div>
 
     <!--
@@ -42,6 +58,9 @@ Avant correction
 
 <script setup>
 import { computed, ref } from 'vue'
+import Checkbox from './checkbox.vue'
+import Button from './button.vue'
+import Layout from './layout.vue'
 
 const hideCompleted = ref(false)
 const todos = ref([{
