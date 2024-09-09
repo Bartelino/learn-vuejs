@@ -1,4 +1,6 @@
 <template>
+    <button @click="showTimer = !showTimer">Afficher / Masquer</button>
+    <Timer v-if="showTimer"></Timer>
     <Layout>
         <template #header>
             En tête
@@ -35,9 +37,7 @@
         </label>
         <p v-if="remainingTodos > 0"> {{ remainingTodos }} tâche{{ remainingTodos > 1 ? 's' : '' }} à faire.</p>
 
-        <Checkbox label="Bonjour"
-        @check="(p) => console.log('coché', p)"
-        />
+        <Checkbox label="Bonjour" @check="(p) => console.log('coché', p)" />
     </div>
 
     <!--
@@ -57,23 +57,22 @@ Avant correction
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Checkbox from './checkbox.vue'
 import Button from './button.vue'
 import Layout from './layout.vue'
+import Timer from './timer.vue'
+
+onMounted(() => {
+    fetch('https://jsonplaceholder.typicode.com/todos')
+        .then(r => r.json())
+        .then(v => todos.value = v.map(todo => ({ ...todo, date: todo.id })))
+})
 
 const hideCompleted = ref(false)
-const todos = ref([{
-    title: 'Tâche ',
-    completed: true,
-    date: Date.now()
-},
-{
-    title: 'Tâche à faire',
-    completed: false,
-    date: Date.now()
-}])
+const todos = ref([])
 const newTodo = ref('')
+const showTimer = ref(true)
 
 const addTodo = () => {
     todos.value.push({
