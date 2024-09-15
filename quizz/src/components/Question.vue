@@ -13,7 +13,7 @@
 <script setup>
 import { shuffleArray } from '@/function/array';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import Answer from './answer.vue';
+import Answer from './Answer.vue';
 
 const props = defineProps({
     question: Object
